@@ -3,13 +3,10 @@ import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { remark } from "remark";
 import html from "remark-html";
-import "react-markdown-editor-lite/lib/index.css";
+import "@uiw/react-markdown-preview/markdown.css";
 import { useRouter } from "next/navigation";
 
-// Dynamically import markdown editor
-const MdEditor = dynamic(() => import("react-markdown-editor-lite"), {
-  ssr: false,
-});
+const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
 export default function CreateBlogPage() {
   const [form, setForm] = useState({
@@ -112,19 +109,19 @@ export default function CreateBlogPage() {
   };
 
   return (
-    <div className="h-screen max-w-7xl mx-auto p-4 flex flex-col space-y-2">
+    <div className=" max-w-7xl mx-auto p-4 flex flex-col space-y-2">
       {/* Header */}
       <div className="flex gap-10 align-center">
-      <h1 className="text-2xl font-bold text-left ml-6">Create Blog</h1>
-      <div className="text-right mr-40">
-        <button
-          type="submit"
-          className="bg-green-600 text-white px-4 py-2 rounded cursor-pointer"
-          onClick={()=>  router.push("/admin/blogs")}
-        >
-          See Blog List
-        </button>
-      </div>
+        <h1 className="text-2xl font-bold text-left ml-6">Create Blog</h1>
+        <div className="text-right mr-40">
+          <button
+            type="submit"
+            className="bg-green-600 text-white px-4 py-2 rounded cursor-pointer"
+            onClick={() => router.push("/admin/blogs")}
+          >
+            See Blog List
+          </button>
+        </div>
       </div>
 
       {/* Main Layout: 75% Form | 25% Preview */}
@@ -219,17 +216,11 @@ export default function CreateBlogPage() {
 
           {/* Markdown Editor */}
           <div className="flex-1 min-h-0 ml-6 mr-6">
-            <MdEditor
+            <MDEditor
               value={form.content}
-              style={{ height: "100%", minHeight: "200px" }}
-              renderHTML={async (text) => {
-                const processed = await remark().use(html).process(text);
-                return processed.toString();
-              }}
-              onChange={handleEditorChange}
-              config={{
-                view: { menu: true, md: true, html: false },
-              }}
+              height={300}
+              onChange={(value) => updateForm("content", value || "")}
+              preview="edit" 
             />
             {errors.content && (
               <p className="text-red-600 text-sm">{errors.content}</p>
@@ -248,7 +239,7 @@ export default function CreateBlogPage() {
         </form>
 
         {/* Preview Section - 25% */}
-        <div className="w-1/4 h-full border rounded p-2 overflow-auto prose prose-sm bg-white">
+        <div className="w-1/4 h-screen border rounded p-2 overflow-auto prose prose-sm bg-white">
           <h2 className="font-semibold text-base text-gray-700 mb-2">
             Live Preview
           </h2>
