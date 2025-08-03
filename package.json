@@ -12,6 +12,7 @@
     "@uiw/react-markdown-preview": "^5.1.5",
     "@uiw/react-md-editor": "^4.0.8",
     "gray-matter": "^4.0.3",
+    "lightningcss": "^1.21.0",
     "next": "15.4.5",
     "react": "19.1.0",
     "react-dom": "19.1.0",
