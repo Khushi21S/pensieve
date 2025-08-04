@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { remark } from "remark";
 import html from "remark-html";
 import "@uiw/react-markdown-preview/markdown.css";
+import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
@@ -59,42 +60,70 @@ export default function CreateBlogPage() {
     if (!form.date.trim()) newErrors.date = "Date is required";
     if (!form.tags.trim()) newErrors.tags = "Tags are required";
     if (!form.author.trim()) newErrors.author = "Author is required";
-    if (!form.image.trim()) {
-      newErrors.image = "Image URL is required";
-    } else if (!/^https?:\/\/.+\.(jpg|jpeg|png|webp|gif)$/.test(form.image)) {
-      newErrors.image = "Must be a valid image URL";
-    }
+ if (!form.image.trim()) {
+  newErrors.image = "Image URL is required";
+} else if (
+  !/^https?:\/\/.+\.(jpg|jpeg|png|webp|gif)(\?.*)?$|^https?:\/\/.*(unsplash|cloudinary|images\.vercel\.app).*$/i.test(form.image)
+) {
+  newErrors.image = "Must be a valid image URL";
+}
+
     if (!form.content.trim()) newErrors.content = "Content is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!validateForm()) return;
 
-    setSubmitting(true);
-    try {
-      const res = await fetch("/api/save-blog", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+  // Show loading SweetAlert
+  Swal.fire({
+    title: "Saving Blog...",
+    text: "Please wait while your blog is being saved.",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
 
-      const result = await res.json();
-      if (result.success) {
-        alert(`Blog saved as ${result.fileName}`);
+  setSubmitting(true);
+  try {
+    const res = await fetch("/api/save-blog", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      Swal.fire({
+        icon: "success",
+        title: "Blog Saved!",
+        text: `Blog saved as "${result.fileName}"`,
+        confirmButtonColor: "#10B981", // Tailwind green-600
+      }).then(() => {
         router.push("/admin/blogs");
-      } else {
-        alert(`Failed to save blog: ${result.error}`);
-      }
-    } catch (err) {
-      alert("Error saving blog: " + err.message);
-    } finally {
-      setSubmitting(false);
+      });
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Save Failed",
+        text: result.error || "Something went wrong.",
+      });
     }
-  };
+  } catch (err) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Error saving blog: " + err.message,
+    });
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   const generateSlug = (title) => {
     return title
@@ -104,9 +133,7 @@ export default function CreateBlogPage() {
       .replace(/\s+/g, "-")
       .replace(/--+/g, "-");
   };
-  const handleEditorChange = ({ text }) => {
-    updateForm("content", text);
-  };
+
 
   return (
     <div className=" max-w-7xl mx-auto p-4 flex flex-col space-y-2">
@@ -240,10 +267,10 @@ export default function CreateBlogPage() {
 
         {/* Preview Section - 25% */}
         <div className="w-1/4 h-screen border rounded p-2 overflow-auto prose prose-sm bg-white">
-          <h2 className="font-semibold text-base text-gray-700 mb-2">
+          <h2 className="font-semibold text-base text-black mb-2">
             Live Preview
           </h2>
-          <div dangerouslySetInnerHTML={{ __html: previewHtml }} />
+          <div className="text-black" dangerouslySetInnerHTML={{ __html: previewHtml }} />
         </div>
       </div>
     </div>

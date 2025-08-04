@@ -1,3 +1,4 @@
+
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
@@ -5,6 +6,8 @@ import { remark } from 'remark'
 import html from 'remark-html'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { log } from 'console'
+
 
 export const dynamicParams = true
 
@@ -29,6 +32,7 @@ async function getBlogContent(slug) {
   const processedContent = await remark().use(html).process(content)
   const contentHtml = processedContent.toString()
 
+
   return {
     title: data.title,
     author: data.author || 'Unknown',
@@ -41,8 +45,9 @@ async function getBlogContent(slug) {
 }
 
 export async function generateMetadata({ params }) {
-  const slug = params.slug
+  const { slug } = await params
   const blog = await getBlogContent(slug)
+  const url = "https://pensieve-here.vercel.app"
 
   return {
     title: blog.title,
@@ -50,7 +55,7 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title: blog.title,
       description: blog.contentHtml.replace(/<[^>]+>/g, '').slice(0, 150),
-      url: `${process.env.NEXT_PUBLIC_BASE_URL}/blog/${slug}`,
+      url: `${url}/blog/${slug}`,
       type: 'article',
       images: [
         {
@@ -71,11 +76,13 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function BlogPage({ params }) {
-  const { slug } = params
+  const { slug } = await params
   const blog = await getBlogContent(slug)
-  const fullUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/blog/${blog.slug}`
+  // const fullUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/blog/${blog.slug}`
 
   const tagList = Array.isArray(blog.tags) ? blog.tags : blog.tags?.split(',')
+
+
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10 text-white">
@@ -132,10 +139,11 @@ export default async function BlogPage({ params }) {
       )}
 
       {/* Content */}
-      <article
-        className="prose prose-invert max-w-none"
-        dangerouslySetInnerHTML={{ __html: blog.contentHtml }}
-      />
+     <article
+  className="text-white space-y-4 leading-relaxed [&_p]:mb-4 [&_h1]:mb-5 [&_h2]:mb-4 [&_h3]:mb-3 [&_ul]:ml-6 [&_ul]:list-disc [&_ol]:ml-6 [&_ol]:list-decimal [&_li]:mb-2 [&_img]:my-6 [&_img]:rounded-lg"
+  dangerouslySetInnerHTML={{ __html: blog.contentHtml }}
+/>
+
     </div>
   )
 }
