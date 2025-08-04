@@ -1,36 +1,133 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🧠 Pensieve – A Lightweight Blog CMS (Frontend-Only)
 
-## Getting Started
+**Pensieve** is a minimal and elegant frontend-only blog CMS built with **Next.js 15 App Router** and **TailwindCSS**. It allows admins to create, edit, and manage markdown-based blogs directly from the browser UI, while supporting markdown formatting, image embedding, tagging, and live preview.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Features
+
+- ✅ Fully responsive blog website
+- ✅ Admin panel (client-side) for creating, editing, deleting blogs
+- ✅ Markdown editor with live preview
+- ✅ Supports `title`, `slug`, `author`, `date`, `tags`, `image`, and `content`
+- ✅ Blogs stored as `.md` files in `content/blogs` for static rendering
+- ✅ Dynamic routing based on blog `slug`
+- ✅ Basic client-side authentication for admin access
+- ✅ SEO-friendly metadata (OpenGraph + Twitter Cards)
+- ✅ Blog search & tag filtering (planned)
+- ✅ Clean and readable UI with dark theme
+
+---
+
+## 🧱 Tech Stack
+
+- **Framework**: [Next.js 15 App Router](https://nextjs.org/)
+- **Styling**: [TailwindCSS](https://tailwindcss.com/)
+- **Markdown Parser**: `gray-matter`, `remark`, `remark-html`
+- **Editor**: `@uiw/react-md-editor`
+- **File System**: `fs` + `path` (via Next.js API routes for local development)
+- **Deployment**: Optimized for [Vercel](https://vercel.com)
+
+---
+
+## 📁 Folder Structure
+
+```
+pensieve/
+├── app/
+│   ├── blog/
+│   │   ├── [slug]/
+│   │   │   └── page.js         # Blog reader page
+│   ├── admin/
+│   │   ├── login.js            # Login page
+│   │   ├── dashboard.js        # List blogs
+│   │   └── create.js           # Create/edit blog UI
+│   └── layout.js
+├── content/
+│   └── blogs/                  # Blog markdown files stored here
+├── public/
+│   └── og-image.png            # Default OpenGraph image
+├── utils/
+│   └── generateBlogSchema.js   # (Optional) JSON-LD schema generator
+├── styles/
+│   └── globals.css
+├── README.md
+└── package.json
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 🛠️ Running Locally
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# 1. Clone the repo
+git clone https://github.com/yourusername/pensieve.git
+cd pensieve
 
-## Learn More
+# 2. Install dependencies
+npm install
 
-To learn more about Next.js, take a look at the following resources:
+# 3. Run the development server
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Then go to [http://localhost:3000](http://localhost:3000)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🔐 Admin Access
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Admin routes (`/admin`) are protected with simple client-side login.
+- Test credentials are hardcoded inside the login file.
+- No database or external auth service is used (meant for local & demo usage).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## ✍️ Creating Blogs
+
+1. Go to `/admin/login` and log in
+2. Click **"Create New Blog"**
+3. Fill out:
+   - Title
+   - Slug (unique)
+   - Author
+   - Date
+   - Tags (comma-separated)
+   - Image URL
+   - Markdown Content
+4. Live preview is available on the right
+5. Save to store as `.md` file inside `content/blogs/`
+
+---
+
+## 🌐 Deployment
+
+This app works well with **Vercel**, but since it depends on the file system for blog storage, full admin functionality (create/update blogs) works only in **local dev mode**.
+
+For production:
+- Use GitHub integration to push `.md` files
+- Or build a backend service to persist content to GitHub repo via API
+
+---
+
+## 📌 Future Enhancements
+
+- [ ] Search & filter blogs by title/tags
+- [ ] Pagination for blog list
+- [ ] Add categories
+- [ ] Dark/light toggle
+- [ ] Rich image embedding from UI
+- [ ] GitHub integration for production writing
+
+---
+
+
+Feel free to fork, modify, and use for personal or learning projects.
+
+---
+
+## 🙋‍♂️ Author
+
+Built with ❤️ by Khushi
+
+If you like this project, feel free to ⭐️ it and contribute!
